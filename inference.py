@@ -30,7 +30,7 @@ class LLaMA:
         with open(Path(checkpoints_dir)/ "params.json", "r") as f:
             params = json.loads(f.read())
 
-        model_args, ModelArgs = ModelArgs(
+        model_args = ModelArgs(
             max_seq_len = max_seq_len,
             max_batch_size = max_batch_size,
             device = device,
@@ -42,9 +42,9 @@ class LLaMA:
         model_args.vocab_size = tokenizer.vocab_size()
 
         if device == "cuda":
-            torch.set_default_tensor_type(torch.cuda.HalfTensor)
+            torch.set_default_dtype(torch.float16)
         else:
-            torch.set_default_tensor_type(torch.BFloat16Tensor)
+            torch.set_default_dtype(torch.bfloat16)
 
         model = Transformer(model_args).to(device)
 
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     model = LLaMA.build(
         checkpoints_dir='llama-2-7b/',
-        tokenizer_path='tokenizer.model',
+        tokenizer_path='llama-2-7b/tokenizer.model',
         load_model=True,
         max_seq_len=1024,
         max_batch_size=len(prompts),
